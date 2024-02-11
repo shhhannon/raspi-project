@@ -1,0 +1,48 @@
+<table>
+    <tr>
+      <th>Time</th>
+      <th>Date</th>
+      <th>Reading</th>
+      <th>Countdown ting</th>
+    </tr>
+    <tr>
+      <td>7:35</td>
+      <td>11/02/2021</td>
+      <td>17 billion power in rise of co2</td>
+      <td><!DOCTYPE html>
+        <html lang="en">
+        <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Countdown Timer</title>
+        </head>
+        <body>
+            <div id="countdown"></div>
+        
+            <script src="countdown.js"></script>
+        </body>
+        </html></td>
+    </tr>
+  </table>
+<script>
+  // Set the initial countdown value
+let countdownValue = 60;
+
+// Function to update the countdown display
+function updateCountdown() {
+    // Display the countdown value in the HTML element with id "countdown"
+    document.getElementById('countdown').textContent = countdownValue;
+    
+    // Decrement the countdown value by 2
+    countdownValue -= 2;
+    
+    // Check if countdown has reached 0
+    if (countdownValue <= 0) {
+        clearInterval(timer); // Stop the countdown when it reaches 0
+        document.getElementById('countdown').textContent = 'Countdown Finished';
+    }
+}
+
+// Update the countdown display every second
+let timer = setInterval(updateCountdown, 1000);
+</script>
