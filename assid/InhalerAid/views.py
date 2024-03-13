@@ -11,5 +11,6 @@ def receive_data_view(request):
         # Process the data as needed
         print(received_data)
         reading = reading(airQuality =  received_data[co2Quality_data], dateTime = received_data[dateTime_data], numDoses = receieved_data[numDoses_data])
+        readings = model.objects.get(reading)
                           
-        return render(request, "data.html")
+        return render(request, "data.html", context={'readings':readings})
