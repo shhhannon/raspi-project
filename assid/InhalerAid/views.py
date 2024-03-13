@@ -10,6 +10,6 @@ def receive_data_view(request):
         received_data = request.POST.get('data', None)
         # Process the data as needed
         print(received_data)
-        reading = reading(airQuality =  received_data[co2Quality_data], dateTime = received_data[dateTime_data]
+        reading = reading(airQuality =  received_data[co2Quality_data], dateTime = received_data[dateTime_data], numDoses = receieved_data[numDoses_data])
                           
         return render(request, "data.html")
