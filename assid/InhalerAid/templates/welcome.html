@@ -1,48 +1,144 @@
-<table>
-    <tr>
-      <th>Time</th>
-      <th>Date</th>
-      <th>Reading</th>
-      <th>Countdown ting</th>
-    </tr>
-    <tr>
-      <td>7:35</td>
-      <td>11/02/2021</td>
-      <td>17 billion power in rise of co2</td>
-      <td><!DOCTYPE html>
-        <html lang="en">
-        <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Countdown Timer</title>
-        </head>
-        <body>
-            <div id="countdown"></div>
-        
-            <script src="countdown.js"></script>
-        </body>
-        </html></td>
-    </tr>
-  </table>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Quality Bar Chart</title>
+    <style>
+        /* Styles for the bar chart */
+        .chart {
+            width: 80%;
+            margin: 20px auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .bar {
+            background-color: #007bff;
+            display: inline-block;
+            width: 40px;
+            margin-right: 10px;
+            position: relative;
+        }
+
+        /* Additional styles for labels */
+        .label {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .x-axis-label {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .y-axis-label {
+            position: absolute;
+            top: 0;
+            right: -60px;
+            transform: translate(0%, -50%);
+        }
+
+        .x-axis-label div, .y-axis-label div {
+            margin-top: 5px;
+        }
+	/* Style to add space */
+        .space {
+            margin-bottom: 50px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Table -->
+<h1>Asthma Attack Tracker</h1>
+<table id="data-table">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Air Quality</th>
+            <th>Volatile Organic Compounds</th>
+            <th>Doses</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>2024-03-19</td>
+            <td>09:00 AM</td>
+            <td>9.5</td>
+            <td>10 ppm</td>
+            <td>200</td>
+        </tr>
+        <tr>
+            <td>2024-03-22</td>
+            <td>12:51 PM</td>
+            <td>6.2</td>
+            <td>11 ppm</td>
+            <td>198</td>
+        </tr>
+        <tr>
+            <td>2024-03-23</td>
+            <td>07:02 AM</td>
+            <td>8.1</td>
+            <td>10 ppm</td>
+            <td>196</td>
+        </tr>
+        <!-- Add more rows as needed -->
+    </tbody>
+</table>
+
+<div class="space"></div> <!-- Add space here -->
+
+<!-- Bar Chart Container -->
+<h1>Frequency of Attacks</h1>
+<div id="bar-chart" class="chart">
+    <div class="x-axis-label">
+    </div>
+    <div class="y-axis-label">
+    </div>
+</div>
+
 <script>
-  // Set the initial countdown value
-let countdownValue = 60;
+    // Function to create the bar chart
+    function createBarChart() {
+        var table = document.getElementById("data-table");
+        var rows = table.getElementsByTagName("tr");
 
-// Function to update the countdown display
-function updateCountdown() {
-    // Display the countdown value in the HTML element with id "countdown"
-    document.getElementById('countdown').textContent = countdownValue;
-    
-    // Decrement the countdown value by 2
-    countdownValue -= 2;
-    
-    // Check if countdown has reached 0
-    if (countdownValue <= 0) {
-        clearInterval(timer); // Stop the countdown when it reaches 0
-        document.getElementById('countdown').textContent = 'Countdown Finished';
+        // Skip header row
+        for (var i = 1; i < rows.length; i++) {
+            var cols = rows[i].getElementsByTagName("td");
+            var date = cols[0].innerText;
+            var airQuality = cols[2].innerText; // Assuming air quality is in the third column
+
+            // Create bar element
+            var bar = document.createElement("div");
+            bar.className = "bar";
+            bar.style.height = (parseFloat(airQuality) * 15) + "px"; // Scale air quality for height
+            bar.title = date + " " + airQuality;
+
+            // Append bar to chart container
+            document.getElementById("bar-chart").appendChild(bar);
+        }
     }
-}
 
-// Update the countdown display every second
-let timer = setInterval(updateCountdown, 1000);
+    // Call the function to create the bar chart
+    createBarChart();
 </script>
+
+</body>
+</html>
