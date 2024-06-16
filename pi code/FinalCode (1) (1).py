@@ -1,13 +1,21 @@
 #imports
-from gpiozero import Button
-from threading import Thread
-import time
-from gpiozero import LED
-from sgp30 import SGP30
+import os
 import sys
+import time
+import datetime
+from threading import Thread
+from sgp30 import SGP30
+from gpiozero import Button, LED
+
+#set up django 
+import django
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'assid.settings')
+django.setup()
+
+from assid.models import readings
 
 #global variables
-# defgine gpio pins connected to pi
+#defgine gpio pins connected to pi
 reedPin = 14
 redPin = 24
 greenPin = 23
@@ -20,56 +28,60 @@ greenLed = LED(greenPin)
 sgp30 = SGP30()
 #stores state of reed switch
 switchState = None
+doses_remaining = 200
 
-def crude_progress_bar():
-    sys.stdout.write('.')
-    sys.stdout.flush()
+#functions
 def CO2():
-    result = sgp30.get_air_quality()
-    print(result)
+    CO2_reading = sgp30.get_air_quality()
+    now = datetime.datetime.now() #records the date and time of inhaler use
+
+    if switchState:
+        doses_remaining -= 2 
+
+    reading = readings.objects.create(
+        CO2 = CO2_reading,
+        date = now.date(),
+        time = now.time(),
+        doses = doses_remaining
+    )
+    reading.save()
+
 def monitorSwitchState():
-    global switchState
     while True:
-        if reedSwitch.is_pressed:
-            switchState = True
+        if reedSwitch.is_pressed: 
+            switchState = True     #if magnetic field detected, Reed switch closes and circuit completes
             
         else:
             switchState = False
-        
         time.sleep(0.1) # small delay to avoid overheating CPU
         
 def controlRGLED():
     while True:
-        if switchState == True:
+        if switchState == True: #if circuit complete, LED turns Red for 30 seconds
             greenLed.off()
             redLed.on()
-            CO2()
+            CO2()             #calls CO2 function
             time.sleep(30)
             redLed.off()
             
-        elif switchState == False:
+        elif switchState == False:    #circuit stays green
             greenLed.on()
-        time.sleep(0.1)
-          
+        time.sleep(0.1)      # small delay to avoid overheating CPU
 
-            
+          
         
 try:
     
-    
-    #CO2Thread = Thread(target = CO2)
     switchThread = Thread(target = monitorSwitchState)
     ledThread = Thread(target = controlRGLED)
 
     switchThread.daemon = False
     ledThread.daemon = False
-    #CO2Thread.daemon = True
 
     switchThread.start()
     ledThread.start()
-    #CO2Thread.start()
-    sgp30.start_measurement(crude_progress_bar)
-    sys.stdout.write('\n')
+
+   
         
 except KeyboardInterrupt:
     print("Exiting program..")
