@@ -1,50 +1,41 @@
 #imports
-import os
-import sys
 import time
-import datetime
+from datetime import date
+from gpiozero import Button, LED
 from threading import Thread
 from sgp30 import SGP30
-from gpiozero import Button, LED
-
-#set up django 
-import django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'assid.settings')
-django.setup()
-
-from assid.models import readings
+import sys
+import requests
+#-----------------------------------------------------------------------------------------------------------------------------
 
 #global variables
-#defgine gpio pins connected to pi
+CO2 = ""
+dateAndTime = datetime.now()
+
+
+# defgine gpio pins connected to pi
 reedPin = 14
 redPin = 24
 greenPin = 23
 
+#Iniates reedSwitch and LED objects
 reedSwitch = Button(reedPin)
 redLed = LED(redPin)
 greenLed = LED(greenPin)
 
-#creates the atmosphere
+#initiates atmosphere sensor object
 sgp30 = SGP30()
 #stores state of reed switch
 switchState = None
-doses_remaining = 200
+url = "http://127.0.0.1:8000/save_reading/"
+#-----------------------------------------------------------------------------------------------------------------------------
 
 #functions
 def CO2():
-    CO2_reading = sgp30.get_air_quality()
-    now = datetime.datetime.now() #records the date and time of inhaler use
-
-    if switchState:
-        doses_remaining -= 2 
-
-    reading = readings.objects.create(
-        CO2 = CO2_reading,
-        date = now.date(),
-        time = now.time(),
-        doses = doses_remaining
-    )
-    reading.save()
+    CO2 = sgp30.get_air_quality()
+    dateAndTime = datetime.now() #records the date and time of inhaleruse
+    data = {'CO2': CO2, 'dateTime': dateAndTime}
+    requests.post(url, data=data) #sends data to django where it is then processed and added to the database
 
 def monitorSwitchState():
     while True:
@@ -67,11 +58,10 @@ def controlRGLED():
         elif switchState == False:    #circuit stays green
             greenLed.on()
         time.sleep(0.1)      # small delay to avoid overheating CPU
-
           
-        
-try:
     
+#main method        
+try:
     switchThread = Thread(target = monitorSwitchState)
     ledThread = Thread(target = controlRGLED)
 
@@ -80,8 +70,6 @@ try:
 
     switchThread.start()
     ledThread.start()
-
-   
         
 except KeyboardInterrupt:
     print("Exiting program..")
