@@ -1,7 +1,11 @@
 from django.db import models
 
-# Create your models here.
-class reading(models.Model):
-  airQuality = models.CharField(max_length = 20)
-  dateTime = models.DateTimeField()
-  numDoses = models.IntegerField()
+class sensorData(models.Model):
+  date = models.DateField()
+  time = models.TimeField()
+  eco2Levels = models.FloatField()
+  totalVoc = models.FloatField()
+  doses = models.IntegerField(default=200)
+
+  def __str__(self):
+        return f"{self.date} {self.time} - eCO2: {self.eco2_levels} ppm, VOC: {self.total_voc} ppb"
