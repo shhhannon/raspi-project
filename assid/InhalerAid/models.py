@@ -7,4 +7,4 @@ class readings(models.Model):
   doses = models.IntegerField(default=200)
 
   def __str__(self):
-        return f"{self.date} {self.time} - eCO2: {self.eco2_levels} ppm"
+      return f"Date: {self.date}, Time: {self.time}, CO2: {self.CO2}, Doses: {self.doses}"
